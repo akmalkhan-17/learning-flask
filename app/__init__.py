@@ -1,5 +1,6 @@
 # this is the package initializer file, it will be executed when the package is imported
 from flask import Flask
+from .extensions import db
 
 
 def create_app():
@@ -12,12 +13,19 @@ def create_app():
 
     app.register_blueprint(auth_bp, url_prefix="/auth")
 
-    @app.route("/")
-    def home():
-        return "Welcome to the barber shop"
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///barber.db"
+    db.init_app(app)
+
+    # @app.route("/")
+    # def home():
+    #     return "Welcome to the barber shop"
 
     @app.route("/about")
     def about():
         return "About Page"
+
+    from .models import (
+        User,
+    )  ##import the model after initializing the app and the database, otherwise it will throw an error because the model will try to access the database before it is initialized
 
     return app
