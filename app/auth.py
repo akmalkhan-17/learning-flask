@@ -2,6 +2,7 @@
 from flask import Blueprint, render_template, request
 from .models import User
 from .extensions import db, bcrypt
+from flask_login import login_user, logout_user, login_required, current_user
 
 
 auth_bp = Blueprint("auth", __name__)
@@ -19,11 +20,13 @@ def login():
         password = request.form.get("password")
 
         if not email or not password:
-          return "All fields are required."
-    
+            return "All fields are required."
+
         user = User.query.filter_by(email=email).first()
         if user and bcrypt.check_password_hash(user.password, password):
-          return f"Welcome back, {user.username}!"
+            login_user(user) #this takes user object and logs in the user by creating a session for them
+            #print(user)
+            return f"Welcome back, {user.username}!"
         else:
             return "Invalid email or password."
 

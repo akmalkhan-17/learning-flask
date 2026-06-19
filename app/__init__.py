@@ -1,6 +1,8 @@
 # this is the package initializer file, it will be executed when the package is imported
 from flask import Flask
-from .extensions import db, bcrypt
+from config import Config
+from app.models import User
+from .extensions import db, bcrypt, login_manager
 
 
 def create_app():
@@ -13,10 +15,15 @@ def create_app():
 
     app.register_blueprint(auth_bp)  # removed this for now , url_prefix="/auth"
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///barber.db"
+    app.config.from_object(Config)  # this will load the config from the Config class in config.py
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///barber.db" #this will create a sqlite database file named barber.db in the root directory of the project
+
     db.init_app(app)
 
     bcrypt.init_app(app)
+
+    login_manager.init_app(app)
 
     # @app.route("/")
     # def home():
@@ -26,8 +33,10 @@ def create_app():
     def about():
         return "About Page"
 
-    from .models import (
-        User,
-    )  ##import the model after initializing the app and the database, otherwise it will throw an error because the model will try to access the database before it is initialized
+    from .models import User ##import the model after initializing the app and the database, otherwise it will throw an error because the model will try to access the database before it is initialized
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
     return app
