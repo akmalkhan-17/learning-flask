@@ -1,6 +1,6 @@
 # this is the package initializer file, it will be executed when the package is imported
 from flask import Flask
-from .extensions import db
+from .extensions import db, bcrypt
 
 
 def create_app():
@@ -11,10 +11,12 @@ def create_app():
 
     from .auth import auth_bp
 
-    app.register_blueprint(auth_bp, url_prefix="/auth")
+    app.register_blueprint(auth_bp)  # removed this for now , url_prefix="/auth"
 
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///barber.db"
     db.init_app(app)
+
+    bcrypt.init_app(app)
 
     # @app.route("/")
     # def home():
