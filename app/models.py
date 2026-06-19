@@ -1,7 +1,9 @@
+from flask_login import UserMixin
 from .extensions import db
 
 
 class User(
+    UserMixin,
     db.Model
 ):  ##creates users table and the class should be singular as we are talking about single user object
     __tablename__ = "users"  # adding this line will allow us to specify the name of the table in the database, otherwise it will default to the name of the class and flask will automatically add an s

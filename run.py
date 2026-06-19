@@ -10,8 +10,9 @@ with app.app_context():
     # User.query.delete()
     # db.session.commit()
 
-
-    print(db.metadata.tables.keys()) #this will print the names of all the tables in the database, if you see users in the list, then it means that the table was created successfully
+    print(
+        db.metadata.tables.keys()
+    )  # this will print the names of all the tables in the database, if you see users in the list, then it means that the table was created successfully
 
 if __name__ == "__main__":
     app.run(debug=True)
