@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>REGISTER</title>
-</head>
-<body>
-	<h1>Register your account</h1>
+<!-- {% block title %}Register{% endblock %} --> 
+
+{% extends "base.html" %} 
+
+{% block content %}
 	<form method="POST">
 		<input type="text" name="username" placeholder="Enter Username">
 		<br><br>
@@ -16,5 +12,4 @@
 		<br><br>
 		<button type="submit">Register</button>
 	</form>
-</body>
-</html>
+{% endblock %}

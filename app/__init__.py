@@ -38,5 +38,7 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
+    
+    login_manager.login_view = "auth.login"  # this will redirect the user to the login page if they try to access a protected route without being logged in || auth.login means auth is the bp and login is the route name of the login function in auth.py
 
     return app
