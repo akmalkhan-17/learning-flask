@@ -1,7 +1,8 @@
 # this is the package initializer file, it will be executed when the package is imported
 from flask import Flask
 from config import Config
-from app.models import User
+
+# from app.models import User no need to import it here as we have already done inside app
 from .extensions import db, bcrypt, login_manager
 
 
@@ -15,9 +16,13 @@ def create_app():
 
     app.register_blueprint(auth_bp)  # removed this for now , url_prefix="/auth"
 
-    app.config.from_object(Config)  # this will load the config from the Config class in config.py
+    app.config.from_object(
+        Config
+    )  # this will load the config from the Config class in config.py
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///barber.db" #this will create a sqlite database file named barber.db in the root directory of the project
+    app.config["SQLALCHEMY_DATABASE_URI"] = (
+        "sqlite:///barber.db"  # this will create a sqlite database file named barber.db in the root directory of the project
+    )
 
     db.init_app(app)
 
@@ -33,12 +38,15 @@ def create_app():
     def about():
         return "About Page"
 
-    from .models import User ##import the model after initializing the app and the database, otherwise it will throw an error because the model will try to access the database before it is initialized
+    from .models import (
+        User,
+    )  # import the model after initializing the app and the database, otherwise it will throw an error because the model will try to access the database before it is initialized and run into circular import
+    # no need to do app.models.user import User because we have already imported the model in the __init__.py file of the models package, so we can just import it from the models package directly
 
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
-    
+
     login_manager.login_view = "auth.login"  # this will redirect the user to the login page if they try to access a protected route without being logged in || auth.login means auth is the bp and login is the route name of the login function in auth.py
 
     return app

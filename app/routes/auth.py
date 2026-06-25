@@ -1,5 +1,5 @@
 # ill be handling auth related routes here
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from .models import User
 from .extensions import db, bcrypt
 from flask_login import login_user, logout_user, login_required, current_user
@@ -20,15 +20,21 @@ def login():
         password = request.form.get("password")
 
         if not email or not password:
-            return "All fields are required."
+            flash("All fields are required.", "error")
+            return redirect(url_for("auth.login"))
 
         user = User.query.filter_by(email=email).first()
         if user and bcrypt.check_password_hash(user.password, password):
-            login_user(user) #this takes user object and logs in the user by creating a session for them
-            #print(user)
-            return redirect(url_for("auth.dashboard"))  # Redirect to the dashboard after successful login
+            login_user(
+                user
+            )  # this takes user object and logs in the user by creating a session for them
+            # print(user)
+            return redirect(
+                url_for("auth.dashboard")
+            )  # Redirect to the dashboard after successful login
         else:
-            return "Invalid email or password."
+            flash("Invalid email or password.", "error")
+            return redirect(url_for("auth.login"))
 
     return render_template("login.html")
 
@@ -36,7 +42,7 @@ def login():
 @auth_bp.route("/usersdb")
 def usersdb():
     users = User.query.all()
-    
+
     return render_template("usersdb.html", users=users)
 
 
@@ -49,7 +55,7 @@ def register():
         email = request.form["email"]
         password = request.form["password"]
 
-        #if i do print(user.id) it would be none here as i havent given one yet but after db.session.commit() it would be give one and this would return an unique id
+        # if i do print(user.id) it would be none here as i havent given one yet but after db.session.commit() it would be give one and this would return an unique id
 
         # integrity checks
         existing_user = (
@@ -81,15 +87,19 @@ def register():
         #     print(user.username, user.email, user.password)  # Debugging: print all users to the console
 
         # Here you would typically save the user to the database
-        return redirect(url_for("auth.login"))  # Redirect to the /login route after successful registration
-    
+        return redirect(
+            url_for("auth.login")
+        )  # Redirect to the /login route after successful registration
+
     return render_template("register.html")
+
 
 @auth_bp.route("/logout")
 @login_required
 def logout():
     logout_user()  # this will log out the user by removing the session
     return redirect(url_for("auth.home"))  # Redirect to the home page after logout
+
 
 @auth_bp.route("/dashboard")
 @login_required
