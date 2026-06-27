@@ -26,6 +26,12 @@ class Shop(db.Model):
 
     description = db.Column(db.Text, nullable=True)
 
-    imagge_url = db.Column(db.String(200), nullable=True)
+    image_url = db.Column(db.String(200), nullable=True)
+
+    owner = db.relationship("User", back_populates="shops") #this will help us do user.shops which will return all the shops of user and this is also not needed to use foreign key it is just convenient
+
+    appointments = db.relationship("Appointment", back_populates="shop")  # this will create a relationship between the shop and the appointment, so that we can access the appointment of a shop by using shop.appointments
+
+    services = db.relationship("Service", back_populates="shop", cascade="all, delete-orphan") # cascade all willl delete all the services if parent shop is deleted  
     
     
